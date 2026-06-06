@@ -1,0 +1,75 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: geotrack-gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: auth-docs
+          uri: lb://geotrack-auth-service
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - SetPath=/v3/api-docs
+        - id: poi-docs
+          uri: lb://geotrack-poi-service
+          predicates:
+            - Path=/api-docs/poi
+          filters:
+            - SetPath=/v3/api-docs
+        - id: content-docs
+          uri: lb://geotrack-content-service
+          predicates:
+            - Path=/api-docs/content
+          filters:
+            - SetPath=/v3/api-docs
+        - id: mall-docs
+          uri: lb://geotrack-mall-service
+          predicates:
+            - Path=/api-docs/mall
+          filters:
+            - SetPath=/v3/api-docs
+        - id: order-docs
+          uri: lb://geotrack-order-service
+          predicates:
+            - Path=/api-docs/order
+          filters:
+            - SetPath=/v3/api-docs
+        - id: auth-route
+          uri: lb://geotrack-auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: poi-route
+          uri: lb://geotrack-poi-service
+          predicates:
+            - Path=/api/poi/**,/api/checkin/**
+        - id: content-route
+          uri: lb://geotrack-content-service
+          predicates:
+            - Path=/api/feed/**,/api/comment/**,/api/like/**
+        - id: mall-route
+          uri: lb://geotrack-mall-service
+          predicates:
+            - Path=/api/mall/**,/api/seckill/**
+        - id: order-route
+          uri: lb://geotrack-order-service
+          predicates:
+            - Path=/api/order/**
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: auth-service
+        url: /api-docs/auth
+      - name: poi-service
+        url: /api-docs/poi
+      - name: content-service
+        url: /api-docs/content
+      - name: mall-service
+        url: /api-docs/mall
+      - name: order-service
+        url: /api-docs/order

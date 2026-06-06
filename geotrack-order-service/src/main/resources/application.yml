@@ -1,0 +1,19 @@
+server:
+  port: 9005
+
+spring:
+  application:
+    name: geotrack-order-service
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/geotrack?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+

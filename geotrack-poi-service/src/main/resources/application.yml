@@ -1,0 +1,42 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: geotrack-poi-service
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/geotrack?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: geotrack-poi-checkin-producer
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+geotrack:
+  internal:
+    service-token: dev-internal-token
+  poi:
+    # 管理员用户 ID 列表，多个值用英文逗号分隔，例如: 1,2,3
+    admin-user-ids: 1
+    # Redis GEO：POI 中心点集合（member = poi:{id}，坐标为 WGS84 经纬度）
+    geo-key: geotrack:poi:geo
+  guard:
+    checkin:
+      qps: 30
+      user-window-seconds: 10
+      user-max-requests: 3
+      token-ttl-seconds: 300

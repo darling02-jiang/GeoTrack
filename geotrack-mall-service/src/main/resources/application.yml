@@ -1,0 +1,48 @@
+server:
+  port: 9004
+
+spring:
+  application:
+    name: geotrack-mall-service
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/geotrack?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: geotrack-mall-seckill-producer
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+geotrack:
+  internal:
+    service-token: dev-internal-token
+  order:
+    pending-timeout-minutes: 15
+    timeout-cancel-batch-size: 100
+    timeout-cancel-fixed-delay-ms: 60000
+    reconcile-min-pending-seconds: 60
+    reconcile-batch-size: 100
+    reconcile-fixed-delay-ms: 60000
+  mq:
+    processing-timeout-minutes: 10
+    failed-retry-batch-size: 100
+    failed-retry-fixed-delay-ms: 120000
+  guard:
+    seckill:
+      qps: 100
+      user-window-seconds: 10
+      user-max-requests: 3
+      token-ttl-seconds: 600

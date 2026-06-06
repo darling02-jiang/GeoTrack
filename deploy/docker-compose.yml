@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: geotrack-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: geotrack
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+
+  redis:
+    # Redis 7 在部分 Windows Docker 环境下会报 Background Jobs / Operation not permitted 并立即退出，6.2 更稳
+    image: redis:6.2-alpine
+    container_name: geotrack-redis
+    ports:
+      - "6379:6379"
+
+  nacos:
+    image: nacos/nacos-server:v2.4.2
+    container_name: geotrack-nacos
+    environment:
+      MODE: standalone
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+
+  # 5.3 镜像默认 JVM 偏大，Windows Docker 内存紧时易出现 Cannot create VM thread；4.9.7 更省资源
+  rocketmq-namesrv:
+    image: apache/rocketmq:4.9.7
+    container_name: geotrack-rocketmq-namesrv
+    command: sh mqnamesrv
+    environment:
+      JAVA_OPT: "-Duser.home=/home/rocketmq -Xms128m -Xmx128m -Xmn64m"
+    ports:
+      - "9876:9876"
+    mem_limit: 384m
+    ulimits:
+      nproc: 65535
+
+  rocketmq-broker:
+    image: apache/rocketmq:4.9.7
+    container_name: geotrack-rocketmq-broker
+    command: sh mqbroker -n rocketmq-namesrv:9876 -c /home/rocketmq/conf/broker.conf
+    depends_on:
+      - rocketmq-namesrv
+    environment:
+      NAMESRV_ADDR: rocketmq-namesrv:9876
+      JAVA_OPT: "-Duser.home=/home/rocketmq -Xms256m -Xmx256m -Xmn128m"
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+    volumes:
+      - ./rocketmq/broker.conf:/home/rocketmq/conf/broker.conf
+    mem_limit: 512m
+    ulimits:
+      nproc: 65535
+
+  minio:
+    image: minio/minio:latest
+    container_name: geotrack-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9003:9001"
+    volumes:
+      - ./minio/data:/data

@@ -1,0 +1,153 @@
+{
+  "info": {
+    "name": "GeoTrack Mainline MVP",
+    "_postman_id": "e2b9b0fd-8742-4d5f-92fb-36d9bf0a03db",
+    "description": "登录 -> 创建POI -> 打卡 -> 重复打卡 主链路演示",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. 登录",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"13800000001\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.environment.set(\"token\", json.data.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. 创建POI",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"西湖断桥\",\n  \"longitude\": 120.1500,\n  \"latitude\": 30.2800,\n  \"radiusMeters\": 800,\n  \"rewardPoints\": 20,\n  \"description\": \"演示打卡点\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/poi",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "poi"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.environment.set(\"poiId\", json.data);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. 打卡",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poiId\": {{poiId}},\n  \"longitude\": 120.1501,\n  \"latitude\": 30.2801,\n  \"content\": \"今日打卡\",\n  \"imageUrl\": \"https://example.com/a.jpg\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/checkin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "checkin"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. 重复打卡(应失败)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poiId\": {{poiId}},\n  \"longitude\": 120.1501,\n  \"latitude\": 30.2801,\n  \"content\": \"今日打卡\",\n  \"imageUrl\": \"https://example.com/a.jpg\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/checkin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "checkin"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080"
+    }
+  ]
+}

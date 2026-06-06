@@ -1,0 +1,54 @@
+server:
+  port: 9001
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        name: SESSION
+        path: /
+        same-site: lax
+        http-only: true
+        secure: false
+
+spring:
+  application:
+    name: geotrack-auth-service
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/geotrack?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  session:
+    store-type: redis
+    redis:
+      namespace: geotrack:auth:session
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: geotrack-auth-producer
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+geotrack:
+  internal:
+    service-token: dev-internal-token
+
+sms:
+  mock-enabled: true
+  mock-login-code: "1234"
+  aliyun:
+    region-id: cn-hangzhou
+    access-key-id: ${ALIYUN_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET:}
+    sign-name: ${ALIYUN_SMS_SIGN_NAME:}
+    template-code: ${ALIYUN_SMS_TEMPLATE_CODE:}
